@@ -1,0 +1,16 @@
+NEI <- readRDS("summarySCC_PM25.rds")
+SCC <- readRDS("Source_Classification_Code.rds")
+library(dplyr)
+con1<-levels(SCC$EI.Sector)[23]
+con2<-levels(SCC$EI.Sector)[18]
+con<-c(con1,con2)
+c<-filter(SCC,EI.Sector %in% con)
+c<-select(c,SCC)
+c[,1]<-as.character(c[,1])
+data<-merge(NEI,c,by="SCC")
+data<-group_by(data,year)
+data<-summarise(data,S=sum(Emissions))
+png("plot4.png",width=480,height=480,units="px")
+with(data,plot(year,S,type="l",ylab="Total PM2.5 Emissions",col="blue"))
+title(main="Total PM2.5 Emission from Coal combustion related sources")
+dev.off()
